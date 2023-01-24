@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class JohnScript : MonoBehaviour, ITouchable
+public class ZekeScript : MonoBehaviour, ITouchable
 {
     public void OnDrag(Ray collidingRay)
     {
@@ -11,7 +11,7 @@ public class JohnScript : MonoBehaviour, ITouchable
 
     public void OnTap()
     {
-        print("I tapped John");
+        print("I tapped Zeke");
     }
 
     // Start is called before the first frame update

@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class InputManagerScript : MonoBehaviour
 {
+    float timer;
+    bool hasMoved;
     // Start is called before the first frame update
     void Start()
     {
@@ -18,24 +20,57 @@ public class InputManagerScript : MonoBehaviour
             Touch[] myTouches = Input.touches;
             Touch myFirstTouch = myTouches[0];
 
-            //print("Touch at:    " + myFirstTouch.position.ToString() + "           Touch Type: " + myFirstTouch.type.ToString());
-
-            Ray myRay = Camera.main.ScreenPointToRay(myFirstTouch.position);
-
-            Debug.DrawRay(myRay.origin, myRay.direction * 15f);
-
-            RaycastHit hitInfo;
-
-            if (Physics.Raycast(myRay, out hitInfo)) 
+            timer += Time.deltaTime;
+            switch (myFirstTouch.phase)
             {
-                //hitInfo.transform.position += Vector3.up;
-                GeorgeScript touchedGeorge = hitInfo.transform.GetComponent<GeorgeScript>();
-                touchedGeorge.changeColor(Color.green);
-                print("Hit " + hitInfo.collider.name);
-            }
-            else
-            {
-                print("Not Hit");
+                case TouchPhase.Began:
+                    timer = 0.0f;
+                    hasMoved = false;
+                    break;
+                case TouchPhase.Moved:
+                    hasMoved = true;
+                    break;
+                case TouchPhase.Stationary:
+                    break;
+                case TouchPhase.Ended:
+                    //print("Touch at:    " + myFirstTouch.position.ToString() + "           Touch Type: " + myFirstTouch.type.ToString());
+                    print(timer);
+                    if (timer < 0.5f)
+                    {
+                        Ray myRay = Camera.main.ScreenPointToRay(myFirstTouch.position);
+
+                        Debug.DrawRay(myRay.origin, myRay.direction * 15f);
+
+                        RaycastHit hitInfo;
+
+                        if (Physics.Raycast(myRay, out hitInfo))
+                        {
+                            //hitInfo.transform.position += Vector3.up;
+                            ITouchable touchedObject = hitInfo.transform.GetComponent<ITouchable>();
+                            if (touchedObject != null)
+                            {
+                                touchedObject.OnTap();
+
+                                if (touchedObject is GeorgeScript)
+                                {
+                                    (touchedObject as GeorgeScript).changeColor(Color.green);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            print("Tap Not Hit Object");
+                        }
+
+                    }
+                    else
+                    {
+                        print("I held my touch");
+                    }
+                    break;
+                case TouchPhase.Canceled:
+                    break;
+                
             }
         }
     }

@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GeorgeScript : MonoBehaviour
+public class GeorgeScript : MonoBehaviour, ITouchable
 {
     Vector3 acceleration, velocity;
     // Start is called before the first frame update
@@ -32,5 +32,15 @@ public class GeorgeScript : MonoBehaviour
     {
         Renderer renderer = GetComponent<Renderer>();
         renderer.material.color = newColor;
+    }
+
+    public void OnTap()
+    {
+        print("I tapped George");
+    }
+
+    public void OnDrag(Ray collidingRay)
+    {
+        throw new NotImplementedException();
     }
 }
