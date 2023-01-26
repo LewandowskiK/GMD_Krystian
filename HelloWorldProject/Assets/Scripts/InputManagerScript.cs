@@ -6,6 +6,7 @@ public class InputManagerScript : MonoBehaviour
 {
     float timer;
     bool hasMoved;
+    ITouchable touchedObject;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,8 +27,19 @@ public class InputManagerScript : MonoBehaviour
                 case TouchPhase.Began:
                     timer = 0.0f;
                     hasMoved = false;
+                    if (touchedObject != null)
+                        touchedObject = null;
                     break;
                 case TouchPhase.Moved:
+                    Ray myRay = Camera.main.ScreenPointToRay(myFirstTouch.position);
+
+                    touchedObject = SelectObject(myRay);
+                    if (!hasMoved)
+                        touchedObject.OnDrag(myRay, hasMoved);
+
+                    if (touchedObject != null)
+                        touchedObject.OnDrag(myRay);
+                    
                     hasMoved = true;
                     break;
                 case TouchPhase.Stationary:
@@ -35,37 +47,26 @@ public class InputManagerScript : MonoBehaviour
                 case TouchPhase.Ended:
                     //print("Touch at:    " + myFirstTouch.position.ToString() + "           Touch Type: " + myFirstTouch.type.ToString());
                     print(timer);
-                    if (timer < 0.5f)
+                    if (timer < 0.5f && !hasMoved)
                     {
-                        Ray myRay = Camera.main.ScreenPointToRay(myFirstTouch.position);
-
-                        Debug.DrawRay(myRay.origin, myRay.direction * 15f);
-
-                        RaycastHit hitInfo;
-
-                        if (Physics.Raycast(myRay, out hitInfo))
-                        {
-                            //hitInfo.transform.position += Vector3.up;
-                            ITouchable touchedObject = hitInfo.transform.GetComponent<ITouchable>();
-                            if (touchedObject != null)
-                            {
-                                touchedObject.OnTap();
-
-                                if (touchedObject is GeorgeScript)
-                                {
-                                    (touchedObject as GeorgeScript).changeColor(Color.green);
-                                }
-                            }
-                        }
-                        else
-                        {
-                            print("Tap Not Hit Object");
-                        }
-
+                        ObjectTapped(myFirstTouch);
+                    }
+                    else if (!hasMoved)
+                    {
+                        print("I held my touch");
                     }
                     else
                     {
-                        print("I held my touch");
+                        if(touchedObject != null)
+                        {
+                            myRay = Camera.main.ScreenPointToRay(myFirstTouch.position);
+                            Debug.DrawRay(myRay.origin, myRay.direction * 15f);
+                            touchedObject.OnDrag(myRay);
+                        }
+                        else
+                        {
+                            print("I tried dragging");
+                        }
                     }
                     break;
                 case TouchPhase.Canceled:
@@ -74,4 +75,46 @@ public class InputManagerScript : MonoBehaviour
             }
         }
     }
+
+    ITouchable SelectObject(Ray myRay)
+    {
+        RaycastHit hitInfo;
+
+        Debug.DrawRay(myRay.origin, myRay.direction * 15f);
+
+        if (Physics.Raycast(myRay, out hitInfo))
+        {
+            return hitInfo.transform.GetComponent<ITouchable>();
+            
+        }
+        return null;
+    }
+
+    void ObjectTapped(Touch myFirstTouch)
+    {
+        Ray myRay = Camera.main.ScreenPointToRay(myFirstTouch.position);
+        
+        //hitInfo.transform.position += Vector3.up;
+
+        ITouchable touchedObject = SelectObject(myRay);
+
+            if (touchedObject != null)
+            {
+                touchedObject.OnTap();
+
+                if (touchedObject is GeorgeScript)
+                {
+                    (touchedObject as GeorgeScript).changeColor(Color.green);
+                }
+            }
+            else
+            {
+                print("Tap Not Hit Object");
+            }
+    }
+
+    void ObjectDragged()
+    {
+
+    } 
 }

@@ -6,6 +6,7 @@ using UnityEngine;
 public class GeorgeScript : MonoBehaviour, ITouchable
 {
     Vector3 acceleration, velocity;
+    float distance;
     // Start is called before the first frame update
     void Start()
     {
@@ -41,6 +42,12 @@ public class GeorgeScript : MonoBehaviour, ITouchable
 
     public void OnDrag(Ray collidingRay)
     {
-        throw new NotImplementedException();
+        transform.position = collidingRay.GetPoint(distance);
+        print(distance + " George drag");
+    }
+
+    public void OnDrag(Ray collidingRay, bool firstTouch)
+    {
+        distance = Vector3.Distance(Camera.main.transform.position, transform.position);
     }
 }
