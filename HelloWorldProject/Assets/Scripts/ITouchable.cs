@@ -6,4 +6,6 @@ interface ITouchable
 
     void OnDrag(Ray collidingRay);
 
+    void OnDrag(Ray collidingRay, bool firstTouch);
+
 }

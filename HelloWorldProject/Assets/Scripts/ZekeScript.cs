@@ -6,6 +6,11 @@ public class ZekeScript : MonoBehaviour, ITouchable
 {
     public void OnDrag(Ray collidingRay)
     {
+        print("I dragged Zeke");
+    }
+
+    public void OnDrag(Ray collidingRay, bool firstTouch)
+    {
         throw new System.NotImplementedException();
     }
 

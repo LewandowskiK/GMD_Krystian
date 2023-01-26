@@ -6,6 +6,11 @@ public class JohnScript : MonoBehaviour, ITouchable
 {
     public void OnDrag(Ray collidingRay)
     {
+        print("I dragged John");
+    }
+
+    public void OnDrag(Ray collidingRay, bool firstTouch)
+    {
         throw new System.NotImplementedException();
     }
 
